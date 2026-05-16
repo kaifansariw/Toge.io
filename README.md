@@ -1,76 +1,234 @@
-# Toge.io — Collaborative Sketchboard
+# 🎨 Toge.io — Collaborative Sketchboard
 
-Toge.io is a lightweight, real-time collaborative sketchboard built with React + Vite on the frontend and a minimal Node + Socket.IO backend. It provides a responsive HTML5 Canvas drawing surface with tools for freehand drawing, shapes, text, selection, pan/zoom, undo/redo, and live cursor/peer presence. The project is structured to let you prototype and extend collaborative drawing features quickly.
+Toge.io is a lightweight, real-time collaborative sketchboard built with **React + Vite** on the frontend and a minimal **Node.js + Socket.IO** backend. It provides a responsive HTML5 Canvas drawing experience with multiple drawing tools, live collaboration, cursor presence, undo/redo functionality, and room-based synchronization.
 
-## Features
-- Multi-tool canvas: Pen, Rectangle, Ellipse, Line, Arrow, Text, Eraser, Select
-- Undo/Redo history with a fixed stack
-- Pan and zoom controls
-- Properties panel for stroke, fill and opacity
-- Real-time collaboration using Socket.IO: room join/leave, element broadcast, cursor updates, and clear
-- Mocked collab mode for local dev when server is not available
-- Small, focused backend for room-based broadcasting
+The project is designed for rapid prototyping and easy extensibility for collaborative whiteboard applications.
 
-## Repository Layout
-- `backend/` — Node server using Socket.IO (room-based events)
-  - `server.js` — minimal Socket.IO server (listens on port 3001 by default)
-  - `package.json`
-- `frontend/` — Vite + React client
-  - `src/`
-    - `App.jsx` — application root and UI composition
-    - `components/` — `Canvas.jsx`, `Toolbar.jsx`, `TopBar.jsx`, `CollabPanel.jsx`, etc.
-    - `hooks/` — `useHistory.js`, `useCanvas.js`
-    - `utils/` — `drawing.js`, `collab.js` (client collab wrapper)
-    - `constants.js`, `index.css`, `main.jsx`
-  - `package.json`, `vite.config.js`, `public/`
+---
 
-## Prerequisites
-- Node.js v16+ and npm or yarn
-- (Optional) A reverse proxy or hosting platform for production deployment
+# ✨ Features
 
-## Local Development
-1. Backend
+- 🖊️ Freehand drawing and sketching
+- 📐 Shape tools:
+  - Rectangle
+  - Ellipse
+  - Line
+  - Arrow
+- 📝 Text tool
+- 🧽 Eraser tool
+- 🎯 Selection tool
+- ↩️ Undo / Redo history
+- 🔍 Pan and Zoom support
+- 🎨 Stroke, fill, and opacity controls
+- 👥 Real-time collaboration using Socket.IO
+- 📍 Live cursor and peer presence
+- 🧪 Mock collaboration mode for local development
+- ⚡ Lightweight and modular architecture
+
+---
+
+# 🏗️ Tech Stack
+
+## Frontend
+- React
+- Vite
+- HTML5 Canvas
+- CSS
+
+## Backend
+- Node.js
+- Express
+- Socket.IO
+
+---
+
+# 📂 Project Structure
+
+```bash
+Toge.io/
+│
+├── backend/                 # Node.js + Socket.IO server
+│   ├── server.js
+│   └── package.json
+│
+├── frontend/                # React + Vite client
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Canvas.jsx
+│   │   │   ├── Toolbar.jsx
+│   │   │   ├── TopBar.jsx
+│   │   │   └── CollabPanel.jsx
+│   │   │
+│   │   ├── hooks/
+│   │   │   ├── useCanvas.js
+│   │   │   └── useHistory.js
+│   │   │
+│   │   ├── utils/
+│   │   │   ├── drawing.js
+│   │   │   └── collab.js
+│   │   │
+│   │   ├── App.jsx
+│   │   ├── constants.js
+│   │   ├── main.jsx
+│   │   └── index.css
+│   │
+│   ├── public/
+│   ├── vite.config.js
+│   └── package.json
+│
+└── README.md
+```
+
+---
+
+# ⚙️ Prerequisites
+
+Before running the project, make sure you have:
+
+- Node.js (v16 or higher)
+- npm or yarn
+
+---
+
+# 🚀 Getting Started
+
+## 1️⃣ Clone the Repository
+
+```bash
+git clone https://github.com/your-username/Toge.io.git
+cd Toge.io
+```
+
+---
+
+# 🖥️ Backend Setup
+
 ```bash
 cd backend
 npm install
 npm start
+```
 
-By default the server listens on http://localhost:3001.
+The backend server runs on:
 
-2.Frontend
+```bash
+http://localhost:3001
+```
 
+---
+
+# 🌐 Frontend Setup
+
+```bash
 cd frontend
 npm install
 npm run dev
+```
 
-Open the Vite dev URL (usually http://localhost:5173).
+The frontend runs on:
 
-3.Collaboration
-The client connects to the Socket.IO server at http://localhost:3001 by default. Update the URL in frontend/src/utils/collab.js to point to a deployed server if needed.
+```bash
+http://localhost:5173
+```
 
-## Build & Production
+---
 
-Build frontend:
+# 🤝 Real-Time Collaboration
+
+The frontend connects to the Socket.IO backend at:
+
+```bash
+http://localhost:3001
+```
+
+To use a deployed backend server, update the server URL inside:
+
+```bash
+frontend/src/utils/collab.js
+```
+
+---
+
+# 🏗️ Build for Production
+
+## Frontend Build
+
+```bash
 cd frontend
 npm run build
+```
 
-Serve the static build with any static server or integrate into a Node/Express host. For production collaboration, deploy the backend server and update the client SERVER_URL.
-Deployment Notes & Recommendations.
+You can serve the generated `dist/` folder using:
 
-Use HTTPS and CORS restrictions for production. Configure allowed origins in the server CORS settings (backend/server.js) instead of origin: '*'.
-Add authentication (JWT or session) to validate room joins.
-Persist canvas state (e.g., Redis or a database) for durable rooms and rejoining users.
-Rate-limit/bundle high-frequency cursor or drawing events to reduce bandwidth.
-Extending the Project
-Add persistent storage/room snapshots
-Implement per-user permissions and admin controls
-Merge operational transforms or CRDTs for robust conflict resolution
-Add server-side replay/history and export (PNG/SVG)
-Testing & Debugging
-Use browser devtools to inspect WebSocket messages.
-Use small rooms to simulate multi-user behavior; the client includes a mock fallback in frontend/src/utils/collab.js.
-Contributing
-Fork the repo, create a feature branch, and open a PR with a descriptive title and changeset.
-Keep changes focused; update or add tests and README when adding features.
-License
-MIT — see LICENSE for details.
+- Vercel
+- Netlify
+- Express
+- Nginx
+- Any static hosting provider
+
+---
+
+# 🔒 Production Recommendations
+
+For production deployment, consider the following improvements:
+
+- Enable HTTPS
+- Restrict CORS origins
+- Add JWT/session authentication
+- Persist room/canvas state using Redis or a database
+- Optimize high-frequency cursor events
+- Add rate limiting
+- Implement CRDT or Operational Transform conflict handling
+
+---
+
+# 🧩 Future Improvements
+
+- 💾 Persistent room storage
+- 📤 Export canvas as PNG/SVG
+- 👨‍💼 Admin/user permissions
+- 🕓 Session replay/history
+- 🌍 Multiplayer room management
+- 📱 Mobile optimization
+
+---
+
+# 🧪 Testing & Debugging
+
+- Use browser DevTools to inspect WebSocket traffic
+- Test collaboration using multiple browser tabs/windows
+- Mock collaboration fallback is available in:
+
+```bash
+frontend/src/utils/collab.js
+```
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome!
+
+## Steps
+
+1. Fork the repository
+2. Create a new feature branch
+3. Commit your changes
+4. Push the branch
+5. Open a Pull Request
+
+Please keep changes focused and update documentation when necessary.
+
+---
+
+# 📄 License
+
+This project is licensed under the MIT License.
+
+See the `LICENSE` file for more information.
+
+---
+
+# 👨‍💻 Author
+
+Developed with ❤️ using React, Vite, Node.js, and Socket.IO.
