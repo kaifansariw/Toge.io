@@ -34,3 +34,43 @@ Toge.io is a lightweight, real-time collaborative sketchboard built with React +
 cd backend
 npm install
 npm start
+
+By default the server listens on http://localhost:3001.
+
+2.Frontend
+
+cd frontend
+npm install
+npm run dev
+
+Open the Vite dev URL (usually http://localhost:5173).
+
+3.Collaboration
+The client connects to the Socket.IO server at http://localhost:3001 by default. Update the URL in frontend/src/utils/collab.js to point to a deployed server if needed.
+
+## Build & Production
+
+Build frontend:
+cd frontend
+npm run build
+
+Serve the static build with any static server or integrate into a Node/Express host. For production collaboration, deploy the backend server and update the client SERVER_URL.
+Deployment Notes & Recommendations.
+
+Use HTTPS and CORS restrictions for production. Configure allowed origins in the server CORS settings (backend/server.js) instead of origin: '*'.
+Add authentication (JWT or session) to validate room joins.
+Persist canvas state (e.g., Redis or a database) for durable rooms and rejoining users.
+Rate-limit/bundle high-frequency cursor or drawing events to reduce bandwidth.
+Extending the Project
+Add persistent storage/room snapshots
+Implement per-user permissions and admin controls
+Merge operational transforms or CRDTs for robust conflict resolution
+Add server-side replay/history and export (PNG/SVG)
+Testing & Debugging
+Use browser devtools to inspect WebSocket messages.
+Use small rooms to simulate multi-user behavior; the client includes a mock fallback in frontend/src/utils/collab.js.
+Contributing
+Fork the repo, create a feature branch, and open a PR with a descriptive title and changeset.
+Keep changes focused; update or add tests and README when adding features.
+License
+MIT — see LICENSE for details.
