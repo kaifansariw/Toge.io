@@ -90,7 +90,7 @@
 
 import { io } from "socket.io-client";
 
-const SERVER_URL = "http://localhost:3001"; // change to your deployed URL later
+const SERVER_URL = io(import.meta.env.VITE_BACKEND_URL); // change to your deployed URL later
 
 export class CollabSession {
   constructor(roomId, userId, callbacks) {
