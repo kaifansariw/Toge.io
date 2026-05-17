@@ -9,7 +9,9 @@ export class CollabSession {
     this.callbacks = callbacks;
     this.peers = {};
 
-    this.socket = io(SERVER_URL);
+   this.socket = io(import.meta.env.VITE_BACKEND_URL, {
+  transports: ["websocket", "polling"]
+});
 
     this.socket.on("connect", () => {
       console.log("Connected to server:", this.socket.id);
