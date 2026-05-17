@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 
-const SERVER_URL = io(import.meta.env.VITE_BACKEND_URL); // change to your deployed URL later
+const SERVER_URL = import.meta.env.VITE_BACKEND_URL; // change to your deployed URL later
 
 export class CollabSession {
   constructor(roomId, userId, callbacks) {
