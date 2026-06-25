@@ -1,4 +1,4 @@
-# Toge.io - Collaborative Sketchboard
+# Toge.io(Together.input/output) - Collaborative Sketchboard
 
 Toge.io is a lightweight, real-time collaborative sketchboard built with **React + Vite** on the frontend and a minimal **Node.js + Socket.IO** backend. It provides a responsive HTML5 Canvas drawing experience with multiple drawing tools, live collaboration, cursor presence, undo/redo functionality, and room-based synchronization.
 
