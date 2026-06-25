@@ -185,7 +185,6 @@ For production deployment, consider the following improvements:
 # 🧩 Future Improvements
 
 - 💾 Persistent room storage
-- 📤 Export canvas as PNG/SVG
 - 👨‍💼 Admin/user permissions
 - 🕓 Session replay/history
 - 🌍 Multiplayer room management
