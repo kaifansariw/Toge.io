@@ -6,7 +6,7 @@ The project is designed for rapid prototyping and easy extensibility for collabo
 
 ---
 
-# ✨ Features
+#  Features
 
 - 🖊️ Freehand drawing and sketching
 - 📐 Shape tools:
@@ -27,7 +27,7 @@ The project is designed for rapid prototyping and easy extensibility for collabo
 
 ---
 
-# 🏗️ Tech Stack
+# Tech Stack
 
 ## Frontend
 - React
@@ -42,7 +42,7 @@ The project is designed for rapid prototyping and easy extensibility for collabo
 
 ---
 
-# 📂 Project Structure
+#  Project Structure
 
 ```bash
 Toge.io/
@@ -81,7 +81,7 @@ Toge.io/
 
 ---
 
-# ⚙️ Prerequisites
+#  Prerequisites
 
 Before running the project, make sure you have:
 
@@ -90,9 +90,9 @@ Before running the project, make sure you have:
 
 ---
 
-# 🚀 Getting Started
+# Getting Started
 
-## 1️⃣ Clone the Repository
+## 1️ Clone the Repository
 
 ```bash
 git clone https://github.com/your-username/Toge.io.git
@@ -101,7 +101,7 @@ cd Toge.io
 
 ---
 
-# 🖥️ Backend Setup
+# Backend Setup
 
 ```bash
 cd backend
@@ -117,7 +117,7 @@ http://localhost:3001
 
 ---
 
-# 🌐 Frontend Setup
+# Frontend Setup
 
 ```bash
 cd frontend
@@ -133,7 +133,7 @@ http://localhost:5173
 
 ---
 
-# 🤝 Real-Time Collaboration
+# Real-Time Collaboration
 
 The frontend connects to the Socket.IO backend at:
 
@@ -149,7 +149,7 @@ frontend/src/utils/collab.js
 
 ---
 
-# 🏗️ Build for Production
+# Build for Production
 
 ## Frontend Build
 
@@ -168,7 +168,7 @@ You can serve the generated `dist/` folder using:
 
 ---
 
-# 🔒 Production Recommendations
+# Production Recommendations
 
 For production deployment, consider the following improvements:
 
@@ -182,7 +182,7 @@ For production deployment, consider the following improvements:
 
 ---
 
-# 🧩 Future Improvements
+# Future Improvements
 
 - 💾 Persistent room storage
 - 👨‍💼 Admin/user permissions
@@ -192,7 +192,7 @@ For production deployment, consider the following improvements:
 
 ---
 
-# 🧪 Testing & Debugging
+# Testing & Debugging
 
 - Use browser DevTools to inspect WebSocket traffic
 - Test collaboration using multiple browser tabs/windows
@@ -204,7 +204,7 @@ frontend/src/utils/collab.js
 
 ---
 
-# 🤝 Contributing
+# Contributing
 
 Contributions are welcome!
 
@@ -220,7 +220,7 @@ Please keep changes focused and update documentation when necessary.
 
 ---
 
-# 📄 License
+# License
 
 This project is licensed under the MIT License.
 
@@ -228,6 +228,6 @@ See the `LICENSE` file for more information.
 
 ---
 
-# 👨‍💻 Author
+# 👨‍💻Author
 
-Developed with ❤️ using React, Vite, Node.js, and Socket.IO.
+Developed by Mohamed Kaif with ❤️ using React, Vite, Node.js, and Socket.IO.
