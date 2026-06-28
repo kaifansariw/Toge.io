@@ -15,8 +15,9 @@ export default function PropertiesPanel({ color, setColor, strokeWidth, setStrok
       flexShrink: 0,
       overflowY: 'auto',
     }}>
+      
       {/* Section label */}
-      <span style={{ fontSize: 9, color: '#444', letterSpacing: 1 }}>COLOR</span>
+      <span style={{ fontSize: 9, color: '#ffffff', letterSpacing: 1 }}>COLOR</span>
 
       {/* Color swatches */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 7, alignItems: 'center' }}>
@@ -34,7 +35,7 @@ export default function PropertiesPanel({ color, setColor, strokeWidth, setStrok
       <div className="divider-v" />
 
       {/* Stroke widths */}
-      <span style={{ fontSize: 9, color: '#444', letterSpacing: 1 }}>SIZE</span>
+      <span style={{ fontSize: 9, color:'#ffffff', letterSpacing: 1 }}>SIZE</span>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }}>
         {STROKE_WIDTHS.map(w => (
           <div
@@ -67,7 +68,7 @@ export default function PropertiesPanel({ color, setColor, strokeWidth, setStrok
       <div className="divider-v" />
 
       {/* Fill toggle */}
-      <span style={{ fontSize: 9, color: '#444', letterSpacing: 1 }}>FILL</span>
+      <span style={{ fontSize: 9, color: '#ffffff', letterSpacing: 1 }}>FILL</span>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center' }}>
         {/* No fill */}
         <div

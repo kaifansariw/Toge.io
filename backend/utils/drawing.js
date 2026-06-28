@@ -1,5 +1,9 @@
-let _id = 0
-export const uid = () => `el_${Date.now()}_${_id++}`
+
+const HANDLE_SIZE = 8;
+const HANDLE_HIT = 10;
+let _id = 0;
+
+export const uid = () => `el_${Date.now()}_${_id++}`;
 
 export function getPoint(e, canvas) {
   const rect = canvas.getBoundingClientRect()
@@ -93,28 +97,65 @@ export function drawElement(ctx, el, selected = false) {
     const y = Math.min(el.y1, el.y2 ?? el.y1) - pad
     const w = Math.abs((el.x2 ?? el.x1) - el.x1) + pad * 2
     const h = Math.abs((el.y2 ?? el.y1) - el.y1) + pad * 2
-    ctx.strokeStyle = '#8be9fd'
-    ctx.lineWidth = 1.5
-    ctx.setLineDash([5, 4])
-    ctx.shadowBlur = 0
-    ctx.strokeRect(x, y, Math.max(w, 24), Math.max(h, 24))
-    ctx.setLineDash([])
+    ctx.strokeStyle = '#8be9fd';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([5, 4]);
+    ctx.shadowBlur = 0;
+    ctx.strokeRect(x, y, Math.max(w, 24), Math.max(h, 24));
+    ctx.setLineDash([]);
 
     // Corner handles
-    const corners = [
-      [x, y], [x + Math.max(w, 24), y],
-      [x, y + Math.max(h, 24)], [x + Math.max(w, 24), y + Math.max(h, 24)],
-    ]
-    ctx.fillStyle = '#8be9fd'
-    corners.forEach(([cx2, cy2]) => {
-      ctx.beginPath()
-      ctx.arc(cx2, cy2, 4, 0, Math.PI * 2)
-      ctx.fill()
-    })
-  }
+ctx.fillStyle = "#ffffff";
+ctx.strokeStyle = "#3b82f6";
 
-  ctx.restore()
+if (el.type === "line" || el.type === "arrow") {
+
+    [[el.x1, el.y1],[el.x2,el.y2]].forEach(([x,y])=>{
+
+        ctx.beginPath();
+
+        ctx.arc(x,y,5,0,Math.PI*2);
+
+        ctx.fill();
+
+        ctx.stroke();
+
+    });
+
 }
+else{
+
+    const corners=[
+
+        [x,y],
+
+        [x+w,y],
+
+        [x,y+h],
+
+        [x+w,y+h]
+
+    ];
+
+    corners.forEach(([cx,cy])=>{
+
+        ctx.beginPath();
+
+        ctx.rect(
+            cx-HANDLE_SIZE/2,
+            cy-HANDLE_SIZE/2,
+            HANDLE_SIZE,
+            HANDLE_SIZE
+        );
+
+        ctx.fill();
+
+        ctx.stroke();
+
+    });
+
+   }}
+  }
 
 export function isHit(el, px, py) {
   const tol = 10
@@ -143,23 +184,162 @@ export function isHit(el, px, py) {
     default:
       return false
   }
-}
+ }
 
 export function drawGrid(ctx, width, height, pan, gridSize = 30) {
-  ctx.save()
+  ctx.save();
   ctx.strokeStyle = 'rgba(255,255,255,0.04)'
-  ctx.lineWidth = 1
+  ctx.lineWidth = 1;
   for (let x = pan.x % gridSize; x < width; x += gridSize) {
-    ctx.beginPath()
-    ctx.moveTo(x, 0)
-    ctx.lineTo(x, height)
-    ctx.stroke()
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, height);
+    ctx.stroke();
   }
   for (let y = pan.y % gridSize; y < height; y += gridSize) {
-    ctx.beginPath()
-    ctx.moveTo(0, y)
-    ctx.lineTo(width, y)
-    ctx.stroke()
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(width, y);
+    ctx.stroke();
   }
-  ctx.restore()
+  ctx.restore();
+ }
+
+
+export function getBounds(el) {
+  switch (el.type) {
+    case "rect":
+    case "ellipse":
+      return {
+        left: Math.min(el.x1, el.x2),
+        right: Math.max(el.x1, el.x2),
+        top: Math.min(el.y1, el.y2),
+        bottom: Math.max(el.y1, el.y2),
+      };
+
+    case "line":
+    case "arrow":
+      return {
+        left: Math.min(el.x1, el.x2),
+        right: Math.max(el.x1, el.x2),
+        top: Math.min(el.y1, el.y2),
+        bottom: Math.max(el.y1, el.y2),
+      };
+
+    default:
+      return null;
+  }
 }
+
+export function getResizeHandle(el, x, y) {
+
+  if (!el) return null;
+
+  // For Line and ARROW
+
+  if (el.type === "line" || el.type === "arrow") {
+
+    if (
+      Math.abs(x - el.x1) < HANDLE_HIT &&
+      Math.abs(y - el.y1) < HANDLE_HIT
+    )
+      return "start";
+
+    if (
+      Math.abs(x - el.x2) < HANDLE_HIT &&
+      Math.abs(y - el.y2) < HANDLE_HIT
+    )
+      return "end";
+
+    return null;
+  }
+
+  // For Rectangle and circle
+
+  if (
+    el.type !== "rect" &&
+    el.type !== "ellipse"
+  )
+    return null;
+
+  const b = getBounds(el);
+
+  const handles = [
+    { name: "nw", x: b.left, y: b.top },
+    { name: "ne", x: b.right, y: b.top },
+    { name: "sw", x: b.left, y: b.bottom },
+    { name: "se", x: b.right, y: b.bottom },
+  ];
+
+  for (const h of handles) {
+    if (
+      Math.abs(x - h.x) <= HANDLE_HIT &&
+      Math.abs(y - h.y) <= HANDLE_HIT
+    ) {
+      return h.name;
+    }
+  }
+
+  return null;
+}
+
+export function resizeElement(el, handle, x, y) {
+
+  const next = { ...el };
+
+  // RECT + ELLIPSE
+
+  if (
+    el.type === "rect" ||
+    el.type === "ellipse"
+  ) {
+
+    switch (handle) {
+
+      case "nw":
+        next.x1 = x;
+        next.y1 = y;
+        break;
+
+      case "ne":
+        next.x2 = x;
+        next.y1 = y;
+        break;
+
+      case "sw":
+        next.x1 = x;
+        next.y2 = y;
+        break;
+
+      case "se":
+        next.x2 = x;
+        next.y2 = y;
+        break;
+    }
+
+    return next;
+  }
+
+  // LINE + ARROW
+
+  if (
+    el.type === "line" ||
+    el.type === "arrow"
+  ) {
+
+    if (handle === "start") {
+      next.x1 = x;
+      next.y1 = y;
+    }
+
+    if (handle === "end") {
+      next.x2 = x;
+      next.y2 = y;
+    }
+
+    return next;
+  }
+
+  return next;
+}
+

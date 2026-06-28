@@ -10,7 +10,7 @@ export const TOOLS = {
 }
 
 export const COLORS = [
-  '#f8f8f2',
+  '#000000',
   '#ff79c6',
   '#50fa7b',
   '#ffb86c',
@@ -18,9 +18,9 @@ export const COLORS = [
   '#bd93f9',
   '#ff5555',
   '#f1fa8c',
-]
+];
 
-export const STROKE_WIDTHS = [2, 4, 8, 14]
+export const STROKE_WIDTHS = [2, 4, 8, 14];
 
 export const TOOL_CURSORS = {
   [TOOLS.SELECT]: 'default',

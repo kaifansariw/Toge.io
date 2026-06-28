@@ -1,5 +1,5 @@
-import Icon, { ICONS } from './Icon.jsx'
-import { TOOLS } from '../constants.js'
+import Icon, { ICONS } from './Icon.jsx';
+import { TOOLS } from '../constants.js';
 
 const TOOL_LIST = [
   { id: TOOLS.SELECT,  icon: ICONS.select,  label: 'Select',    key: 'V' },
@@ -26,7 +26,9 @@ export default function Toolbar({ tool, onToolChange }) {
       zIndex: 10,
       flexShrink: 0,
     }}>
-      {TOOL_LIST.map((t, i) => (
+
+      {
+      TOOL_LIST.map((t, i) => (
         <button
           key={t.id}
           className={`tool-btn ${tool === t.id ? 'active' : ''}`}
@@ -37,7 +39,8 @@ export default function Toolbar({ tool, onToolChange }) {
           <Icon d={t.icon} size={18} />
           <span className="tooltip right">{t.label} ({t.key})</span>
         </button>
-      ))}
+      ))
+      }
 
       {/* Separator */}
       <div style={{ flex: 1 }} />

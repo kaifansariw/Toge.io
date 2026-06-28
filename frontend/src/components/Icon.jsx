@@ -1,4 +1,5 @@
 export default function Icon({ d, size = 20, strokeWidth = 2 }) {
+  
   return (
     <svg
       width={size}
@@ -10,9 +11,11 @@ export default function Icon({ d, size = 20, strokeWidth = 2 }) {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      {Array.isArray(d)
+      {
+      Array.isArray(d)
         ? d.map((path, i) => <path key={i} d={path} />)
-        : <path d={d} />}
+        : <path d={d} />
+        }
     </svg>
   )
 }
