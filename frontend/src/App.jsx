@@ -1,34 +1,34 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { TOOLS, COLORS, KEYBOARD_SHORTCUTS } from './constants.js'
-import { useHistory } from './hooks/useHistory.js'
-import { CollabSession } from './utils/collab.js'
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { TOOLS, COLORS, KEYBOARD_SHORTCUTS } from './constants.js';
+import { useHistory } from './hooks/useHistory.js';
+import { CollabSession } from '../../backend/utils/collab.js';
 
-import TopBar from './components/TopBar.jsx'
-import Toolbar from './components/Toolbar.jsx'
-import Canvas from './components/Canvas.jsx'
-import PropertiesPanel from './components/PropertiesPanel.jsx'
-import CollabPanel from './components/CollabPanel.jsx'
-import StatusBar from './components/StatusBar.jsx'
+import TopBar from './components/TopBar.jsx';
+import Toolbar from './components/Toolbar.jsx';
+import Canvas from './components/Canvas.jsx';
+import PropertiesPanel from './components/PropertiesPanel.jsx';
+import CollabPanel from './components/CollabPanel.jsx';
+import StatusBar from './components/StatusBar.jsx';
 
 
 // Generate a stable user name for this session
 const MY_NAME = `User_${Math.floor(Math.random() * 9000) + 1000}`;
 
 export default function App() {
-  // ── Tool state ──
-  const [tool, setTool] = useState(TOOLS.PEN)
-  const [color, setColor] = useState(COLORS[0])
-  const [strokeWidth, setStrokeWidth] = useState(2)
-  const [fill, setFill] = useState('transparent')
+  //  Tool state 
+  const [tool, setTool] = useState(TOOLS.PEN);
+  const [color, setColor] = useState(COLORS[0]);
+  const [strokeWidth, setStrokeWidth] = useState(2);
+  const [fill, setFill] = useState('transparent');
 
-  // ── Canvas state ──
-  const [elements, setElements] = useState([])
-  const [selectedId, setSelectedId] = useState(null)
-  const [zoom, setZoom] = useState(1)
-  const [pan, setPan] = useState({ x: 0, y: 0 })
+  //  Canvas state 
+  const [elements, setElements] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
 
-  // ── History ──
-  const { push: pushHistory, undo: histUndo, redo: histRedo, canUndo, canRedo } = useHistory([])
+  //  History 
+  const { push: pushHistory, undo: histUndo, redo: histRedo, canUndo, canRedo } = useHistory([]);
 
   const undo = useCallback(() => {
     const prev = histUndo()
@@ -40,7 +40,7 @@ export default function App() {
     if (next !== null) { setElements(next); setSelectedId(null) }
   }, [histRedo])
 
-  // ── Collab ──
+  //  Collab 
   const collabRef = useRef(null)
   const [showCollab, setShowCollab] = useState(false)
   const [collabJoined, setCollabJoined] = useState(false)
@@ -67,7 +67,7 @@ export default function App() {
     setPeers([])
   }, [])
 
-  // ── Keyboard shortcuts ──
+  //  Keyboard shortcuts 
   useEffect(() => {
     const handler = (e) => {
       // Don't fire if typing in an input
@@ -75,7 +75,7 @@ export default function App() {
 
       // Tool shortcuts
       if (KEYBOARD_SHORTCUTS[e.key]) {
-        setTool(KEYBOARD_SHORTCUTS[e.key])
+        setTool(KEYBOARD_SHORTCUTS[e.key]);
         return
       }
 
@@ -111,7 +111,7 @@ export default function App() {
       height: '100vh',
       display: 'flex',
       flexDirection: 'column',
-      background: '#1a1a2e',
+      backgroundColor: '#ffffff',
       overflow: 'hidden',
       fontFamily: "'IBM Plex Mono', monospace",
     }}>
@@ -122,7 +122,10 @@ export default function App() {
         canUndo={canUndo}
         canRedo={canRedo}
         zoom={zoom}
-        onResetZoom={() => { setZoom(1); setPan({ x: 0, y: 0 }) }}
+        onResetZoom={() => { 
+          setZoom(1); 
+          setPan({ x: 0, y: 0 }) 
+        }}
         elementCount={elements.length}
         onClear={clearCanvas}
         onToggleCollab={() => setShowCollab(v => !v)}

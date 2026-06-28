@@ -151,7 +151,7 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #8be9fd, #50fa7b);
+  background-color: #50fa7b;
   color: #1a1a2e;
   border: none;
   border-radius: 8px;

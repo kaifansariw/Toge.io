@@ -1,5 +1,6 @@
 export default function StatusBar({ joined, roomId, peerCount }) {
   return (
+
     <footer style={{
       height: 28,
       background: '#16213e',
@@ -11,7 +12,8 @@ export default function StatusBar({ joined, roomId, peerCount }) {
       flexShrink: 0,
       userSelect: 'none',
     }}>
-      <span style={{ color: '#383850', fontSize: 11 }}>
+
+      <span style={{ color:'#ffffff', fontSize: 11 }}>
         Alt+drag to pan · Scroll to zoom · Del to delete · Ctrl+Z/Y to undo/redo
       </span>
 
@@ -29,6 +31,7 @@ export default function StatusBar({ joined, roomId, peerCount }) {
           Room: <strong>{roomId}</strong> · {peerCount} user{peerCount !== 1 ? 's' : ''}
         </span>
       )}
+      
     </footer>
   )
 }

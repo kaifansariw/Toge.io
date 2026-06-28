@@ -1,10 +1,10 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback } from 'react';
 
 export function useHistory(initial = []) {
-  const [stack, setStack] = useState([initial])
-  const [index, setIndex] = useState(0)
+  const [stack, setStack] = useState([initial]);
+  const [index, setIndex] = useState(0);
 
-  const current = stack[index]
+  const current = stack[index];
 
   const push = useCallback((newState) => {
     setStack(s => {

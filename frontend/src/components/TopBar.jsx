@@ -77,7 +77,7 @@ export default function TopBar({
       <div style={{ flex: 1 }} />
 
       {/* Element count */}
-      <span style={{ color: '#444', fontSize: 11 }}>
+      <span style={{ color:'#ffffff', fontSize: 11 }}>
         {elementCount} element{elementCount !== 1 ? 's' : ''}
       </span>
 

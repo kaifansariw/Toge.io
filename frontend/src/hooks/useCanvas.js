@@ -13,8 +13,8 @@ export function useCanvas({
   setTextInput,
   collabRef,
 }) {
-  const dragRef = useRef(null)
-  const panRef = useRef(null)
+  const dragRef = useRef(null);
+  const panRef = useRef(null);
 
   const onPointerDown = useCallback((e) => {
     // Middle mouse or Alt+left = pan
@@ -129,7 +129,7 @@ export function useCanvas({
     // Zoom toward mouse position
     // (simplified version — zoom around center)
     return delta
-  }, [])
+  }, []);
 
   return { onPointerDown, onPointerMove, onPointerUp, onWheel }
 }
