@@ -17,7 +17,7 @@ export default function CollabPanel({
   const [copied, setCopied] = useState(false);
 
   const handleJoin = () => {
-    if (!inputRoomId.trim()) return
+    if (!inputRoomId.trim()) return;
     onJoin(inputRoomId.trim());  // calls joinRoom() in App.jsx which sets collabRef
   }
 
