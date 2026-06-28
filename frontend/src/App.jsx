@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { TOOLS, COLORS, KEYBOARD_SHORTCUTS } from './constants.js';
 import { useHistory } from './hooks/useHistory.js';
-import { CollabSession } from '../../backend/utils/collab.js';
+import { CollabSession } from '../utils/collab.js';
 
 import TopBar from './components/TopBar.jsx';
 import Toolbar from './components/Toolbar.jsx';
