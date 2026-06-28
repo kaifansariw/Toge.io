@@ -228,6 +228,6 @@ See the `LICENSE` file for more information.
 
 ---
 
-# 👨‍💻Author
+# Author
 
 Developed by Mohamed Kaif with ❤️ using React, Vite, Node.js, and Socket.IO.
