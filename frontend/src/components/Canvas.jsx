@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { TOOLS, TOOL_CURSORS } from '../constants.js';
-import { getPoint, drawElement, drawGrid, isHit, uid, getResizeHandle, resizeElement } from '../../../backend/utils/drawing.js';
+import { getPoint, drawElement, drawGrid, isHit, uid, getResizeHandle, resizeElement } from '../../utils/drawing.js';
 
 
 export default function Canvas({
