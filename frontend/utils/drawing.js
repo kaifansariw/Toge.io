@@ -14,7 +14,7 @@ export function getPoint(e, canvas) {
 
 export function drawElement(ctx, el, selected = false) {
   ctx.save()
-  ctx.strokeStyle = el.color || '#f8f8f2'
+  ctx.strokeStyle = el.color || '#1e1e1e'
   ctx.fillStyle = el.fill || 'transparent'
   ctx.lineWidth = el.strokeWidth || 2
   ctx.lineCap = 'round'
@@ -22,8 +22,8 @@ export function drawElement(ctx, el, selected = false) {
   ctx.globalAlpha = el.opacity ?? 1
 
   if (selected) {
-    ctx.shadowColor = '#8be9fd'
-    ctx.shadowBlur = 10
+    ctx.shadowColor = 'rgba(105, 101, 219, 0.4)'
+    ctx.shadowBlur = 8
   }
 
   switch (el.type) {
@@ -80,10 +80,17 @@ export function drawElement(ctx, el, selected = false) {
       break
     }
     case 'text': {
-      ctx.font = `${el.fontSize || 18}px 'IBM Plex Mono', monospace`
-      ctx.fillStyle = el.color || '#f8f8f2'
+      ctx.save()
+      ctx.font = `${el.fontSize || 20}px 'Kalam', 'Assistant', sans-serif`
+      ctx.textBaseline = 'top'
+      ctx.fillStyle = el.color || '#1e1e1e'
       ctx.shadowBlur = 0
-      ctx.fillText(el.text || '', el.x1, el.y1)
+      const lines = String(el.text || '').split('\n')
+      const lineHeight = (el.fontSize || 20) * 1.3
+      lines.forEach((line, idx) => {
+        ctx.fillText(line, el.x1, el.y1 + idx * lineHeight)
+      })
+      ctx.restore()
       break
     }
     default:
@@ -92,12 +99,27 @@ export function drawElement(ctx, el, selected = false) {
 
   // Selection outline
   if (selected) {
-    const pad = 10
-    const x = Math.min(el.x1, el.x2 ?? el.x1) - pad
-    const y = Math.min(el.y1, el.y2 ?? el.y1) - pad
-    const w = Math.abs((el.x2 ?? el.x1) - el.x1) + pad * 2
-    const h = Math.abs((el.y2 ?? el.y1) - el.y1) + pad * 2
-    ctx.strokeStyle = '#8be9fd';
+    const pad = 8
+    let x, y, w, h
+    if (el.type === 'text') {
+      ctx.save()
+      ctx.font = `${el.fontSize || 20}px 'Kalam', 'Assistant', sans-serif`
+      const lines = String(el.text || '').split('\n')
+      const maxLineWidth = Math.max(...lines.map(l => ctx.measureText(l).width), 20)
+      const lineHeight = (el.fontSize || 20) * 1.3
+      const textHeight = Math.max(lines.length * lineHeight, el.fontSize || 20)
+      ctx.restore()
+      x = el.x1 - pad
+      y = el.y1 - pad
+      w = maxLineWidth + pad * 2
+      h = textHeight + pad * 2
+    } else {
+      x = Math.min(el.x1, el.x2 ?? el.x1) - pad
+      y = Math.min(el.y1, el.y2 ?? el.y1) - pad
+      w = Math.abs((el.x2 ?? el.x1) - el.x1) + pad * 2
+      h = Math.abs((el.y2 ?? el.y1) - el.y1) + pad * 2
+    }
+    ctx.strokeStyle = '#6965db';
     ctx.lineWidth = 1.5;
     ctx.setLineDash([5, 4]);
     ctx.shadowBlur = 0;
@@ -106,7 +128,8 @@ export function drawElement(ctx, el, selected = false) {
 
     // Corner handles
 ctx.fillStyle = "#ffffff";
-ctx.strokeStyle = "#3b82f6";
+ctx.strokeStyle = "#6965db";
+ctx.lineWidth = 1.5;
 
 if (el.type === "line" || el.type === "arrow") {
 
@@ -179,29 +202,43 @@ export function isHit(el, px, py) {
       ) / len
       return d < tol
     }
-    case 'text':
-      return Math.abs(px - el.x1) < 100 && Math.abs(py - el.y1) < 24
+    case 'text': {
+      const fontSize = el.fontSize || 20
+      const lines = String(el.text || '').split('\n')
+      const maxLen = Math.max(...lines.map(l => l.length), 1)
+      const estWidth = Math.max(maxLen * (fontSize * 0.62), 24)
+      const estHeight = Math.max(lines.length * fontSize * 1.3, fontSize)
+      return (
+        px >= el.x1 - 8 &&
+        px <= el.x1 + estWidth + 8 &&
+        py >= el.y1 - 8 &&
+        py <= el.y1 + estHeight + 8
+      )
+    }
     default:
       return false
   }
  }
 
-export function drawGrid(ctx, width, height, pan, gridSize = 30) {
+// ─── Dot Grid (Excalidraw-style) ───
+export function drawGrid(ctx, width, height, pan, gridSize = 20) {
   ctx.save();
-  ctx.strokeStyle = 'rgba(255,255,255,0.04)'
-  ctx.lineWidth = 1;
-  for (let x = pan.x % gridSize; x < width; x += gridSize) {
-    ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, height);
-    ctx.stroke();
+  
+  // Draw dots instead of lines
+  const dotRadius = 1;
+  ctx.fillStyle = '#d0d0d0';
+  
+  const startX = pan.x % gridSize;
+  const startY = pan.y % gridSize;
+  
+  for (let x = startX; x < width; x += gridSize) {
+    for (let y = startY; y < height; y += gridSize) {
+      ctx.beginPath();
+      ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
-  for (let y = pan.y % gridSize; y < height; y += gridSize) {
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(width, y);
-    ctx.stroke();
-  }
+  
   ctx.restore();
  }
 
@@ -342,4 +379,3 @@ export function resizeElement(el, handle, x, y) {
 
   return next;
 }
-

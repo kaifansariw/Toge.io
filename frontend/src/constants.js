@@ -1,5 +1,6 @@
 export const TOOLS = {
   SELECT: 'select',
+  HAND: 'hand',
   PEN: 'pen',
   RECT: 'rect',
   ELLIPSE: 'ellipse',
@@ -10,20 +11,21 @@ export const TOOLS = {
 }
 
 export const COLORS = [
-  '#000000',
-  '#ff79c6',
-  '#50fa7b',
-  '#ffb86c',
-  '#8be9fd',
-  '#bd93f9',
-  '#ff5555',
-  '#f1fa8c',
+  '#1e1e1e',
+  '#e03131',
+  '#2f9e44',
+  '#1971c2',
+  '#f08c00',
+  '#c2255c',
+  '#6741d9',
+  '#0c8599',
 ];
 
-export const STROKE_WIDTHS = [2, 4, 8, 14];
+export const STROKE_WIDTHS = [1, 2, 4, 8];
 
 export const TOOL_CURSORS = {
   [TOOLS.SELECT]: 'default',
+  [TOOLS.HAND]: 'grab',
   [TOOLS.PEN]: 'crosshair',
   [TOOLS.RECT]: 'crosshair',
   [TOOLS.ELLIPSE]: 'crosshair',
@@ -35,6 +37,7 @@ export const TOOL_CURSORS = {
 
 export const KEYBOARD_SHORTCUTS = {
   v: TOOLS.SELECT,
+  h: TOOLS.HAND,
   p: TOOLS.PEN,
   r: TOOLS.RECT,
   e: TOOLS.ELLIPSE,

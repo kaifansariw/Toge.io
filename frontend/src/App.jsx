@@ -105,59 +105,63 @@ export default function App() {
     setSelectedId(null)
   }, [pushHistory])
 
+  // ── Zoom helpers ──
+  const zoomIn = useCallback(() => {
+    setZoom(z => Math.min(z * 1.15, 8))
+  }, [])
+
+  const zoomOut = useCallback(() => {
+    setZoom(z => Math.max(z * 0.85, 0.1))
+  }, [])
+
   return (
-    <div style={{
-      width: '100vw',
-      height: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      backgroundColor: '#ffffff',
-      overflow: 'hidden',
-      fontFamily: "'IBM Plex Mono', monospace",
-    }}>
-      {/* Top bar */}
-      <TopBar
-        onUndo={undo}
-        onRedo={redo}
-        canUndo={canUndo}
-        canRedo={canRedo}
+    <div className="canvas-container">
+
+      {/* Canvas layer (bottom) */}
+      <Canvas
+        tool={tool}
+        color={color}
+        strokeWidth={strokeWidth}
+        fill={fill}
+        elements={elements}
+        setElements={setElements}
+        selectedId={selectedId}
+        setSelectedId={setSelectedId}
         zoom={zoom}
-        onResetZoom={() => { 
-          setZoom(1); 
-          setPan({ x: 0, y: 0 }) 
-        }}
-        elementCount={elements.length}
-        onClear={clearCanvas}
-        onToggleCollab={() => setShowCollab(v => !v)}
-        collabActive={collabJoined}
+        setZoom={setZoom}
+        pan={pan}
+        setPan={setPan}
+        pushHistory={pushHistory}
+        peers={peers}
+        collabRef={collabRef}
       />
 
-      {/* Main area */}
-      <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
+      {/* UI layer (floating panels on top) */}
+      <div className="ui-layer">
 
-        {/* Left toolbar */}
+        {/* Top center toolbar */}
         <Toolbar tool={tool} onToolChange={setTool} />
 
-        {/* Canvas */}
-        <Canvas
-          tool={tool}
-          color={color}
-          strokeWidth={strokeWidth}
-          fill={fill}
-          elements={elements}
-          setElements={setElements}
-          selectedId={selectedId}
-          setSelectedId={setSelectedId}
+        {/* Floating controls: menu, collab, zoom, undo/redo, help */}
+        <TopBar
+          onUndo={undo}
+          onRedo={redo}
+          canUndo={canUndo}
+          canRedo={canRedo}
           zoom={zoom}
-          setZoom={setZoom}
-          pan={pan}
-          setPan={setPan}
-          pushHistory={pushHistory}
-          peers={peers}
-          collabRef={collabRef}
+          onResetZoom={() => { 
+            setZoom(1); 
+            setPan({ x: 0, y: 0 }) 
+          }}
+          onZoomIn={zoomIn}
+          onZoomOut={zoomOut}
+          elementCount={elements.length}
+          onClear={clearCanvas}
+          onToggleCollab={() => setShowCollab(v => !v)}
+          collabActive={collabJoined}
         />
 
-        {/* Right properties panel */}
+        {/* Properties panel (floating left) */}
         <PropertiesPanel
           color={color}
           setColor={(c) => { setColor(c); setFill(f => f !== 'transparent' ? c : f) }}
@@ -179,14 +183,14 @@ export default function App() {
             peers={peers}
           />
         )}
-      </div>
 
-      {/* Status bar */}
-      <StatusBar
-        joined={collabJoined}
-        roomId={collabRoomId}
-        peerCount={peers.length + 1}
-      />
+        {/* Status bar (only shows when in collab) */}
+        <StatusBar
+          joined={collabJoined}
+          roomId={collabRoomId}
+          peerCount={peers.length + 1}
+        />
+      </div>
     </div>
   )
 }

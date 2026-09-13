@@ -19,6 +19,8 @@ export default function Canvas({
   const [drawing, setDrawing] = useState(false);
   const [textInput, setTextInput] = useState(null);
   const [textDraft, setTextDraft] = useState('');
+  const inputRef = useRef(null);
+  const mountingRef = useRef(false);
   const dragRef = useRef(null);
   const panRef = useRef(null);
   const resizeRef = useRef(null);
@@ -44,8 +46,10 @@ export default function Canvas({
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
-    ctx.fillStyle = '#ffffff';
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Light canvas background
+    ctx.fillStyle = '#f8f9fa';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     drawGrid(ctx, canvas.width, canvas.height, pan);
 
@@ -59,7 +63,7 @@ export default function Canvas({
     // Peer cursors
     peers.forEach(p => {
       ctx.save()
-      ctx.font = 'bold 11px IBM Plex Mono, monospace'
+      ctx.font = "bold 12px 'Assistant', sans-serif"
       ctx.fillStyle = p.color
       // Arrow
       ctx.beginPath()
@@ -69,59 +73,132 @@ export default function Canvas({
       ctx.lineTo(p.cursor.x + 2, p.cursor.y + 18)
       ctx.closePath()
       ctx.fill()
-      // Name
+      // Name badge
+      const textWidth = ctx.measureText(p.name).width
       ctx.fillStyle = p.color
-      ctx.fillText(p.name, p.cursor.x + 14, p.cursor.y + 10)
+      ctx.beginPath()
+      ctx.roundRect(p.cursor.x + 12, p.cursor.y + 2, textWidth + 12, 20, 4)
+      ctx.fill()
+      ctx.fillStyle = '#fff'
+      ctx.fillText(p.name, p.cursor.x + 18, p.cursor.y + 16)
       ctx.restore()
     })
 
     ctx.restore()
   }, [elements, currentEl, selectedId, zoom, pan, peers]);
 
+  // Submit text element to canvas and history
+  const submitText = useCallback((text) => {
+    if (!textInput) return;
+
+    const rawVal = text !== undefined ? text : (inputRef.current?.value ?? textDraft);
+    const value = (rawVal ?? '').trim();
+
+    if (value) {
+      const el = {
+        id: uid(),
+        type: 'text',
+        color: color || '#1e1e1e', 
+        strokeWidth: strokeWidth || 2, 
+        fill: 'transparent', 
+        opacity: 1,
+        text: value,
+        x1: textInput.wx, 
+        y1: textInput.wy, 
+        fontSize: 20,
+      };
+      const next = [...elements, el];
+      setElements(next);
+      pushHistory(next);
+      collabRef?.current?.broadcast({ type: 'element', el });
+    }
+    setTextDraft('');
+    setTextInput(null);
+  }, [textInput, textDraft, elements, color, strokeWidth, pushHistory, setElements, collabRef]);
+
+  // Focus input when text tool creates input overlay
+  useEffect(() => {
+    if (textInput) {
+      mountingRef.current = true;
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+        mountingRef.current = false;
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [textInput]);
+
+  // Double click text to edit
+  const onDoubleClick = useCallback((e) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const raw = getPoint(e, canvas);
+    const pt = { x: (raw.x - pan.x) / zoom, y: (raw.y - pan.y) / zoom };
+
+    const hit = [...elements].reverse().find(el => isHit(el, pt.x, pt.y));
+    if (hit && hit.type === 'text') {
+      const next = elements.filter(el => el.id !== hit.id);
+      setElements(next);
+      pushHistory(next);
+      mountingRef.current = true;
+      setTextDraft(hit.text);
+      setTextInput({
+        x: hit.x1 * zoom + pan.x,
+        y: hit.y1 * zoom + pan.y,
+        wx: hit.x1,
+        wy: hit.y1,
+      });
+    }
+  }, [elements, pan, zoom, pushHistory, setElements]);
+
   //  Pointer Down 
   const onPointerDown = useCallback((e) => {
-    if (e.button === 1 || (e.button === 0 && e.altKey)) {
-      panRef.current = { startX: e.clientX - pan.x, startY: e.clientY - pan.y }
+    // If textInput was open and user clicks on canvas, commit active text
+    if (textInput) {
+      const val = (inputRef.current?.value ?? textDraft).trim();
+      if (val) {
+        submitText(val);
+      } else {
+        setTextDraft('');
+        setTextInput(null);
+      }
+    }
+
+    // Hand tool or middle-click or alt+click = pan
+    if (e.button === 1 || (e.button === 0 && e.altKey) || (e.button === 0 && tool === TOOLS.HAND)) {
+      panRef.current = { startX: e.clientX - pan.x, startY: e.clientY - pan.y };
+      e.currentTarget.style.cursor = 'grabbing';
       e.preventDefault();
-      return
+      return;
     }
 
-    const canvas = canvasRef.current
-    const raw = getPoint(e, canvas)
-    const pt = { x: (raw.x - pan.x) / zoom, y: (raw.y - pan.y) / zoom }
+    const canvas = canvasRef.current;
+    const raw = getPoint(e, canvas);
+    const pt = { x: (raw.x - pan.x) / zoom, y: (raw.y - pan.y) / zoom };
  
-   if (tool === TOOLS.SELECT) {
+    if (tool === TOOLS.SELECT) {
+      const hit = [...elements].reverse().find(el => isHit(el, pt.x, pt.y));
+      setSelectedId(hit?.id ?? null);
+      if (!hit) return;
 
-    const hit = [...elements]
-        .reverse()
-        .find(el => isHit(el, pt.x, pt.y));
-
-    setSelectedId(hit?.id ?? null);
-
-    if (!hit) return;
-
-    const handle = getResizeHandle(hit, pt.x, pt.y);
-
-    if (handle) {
-
+      const handle = getResizeHandle(hit, pt.x, pt.y);
+      if (handle) {
         resizeRef.current = {
-            id: hit.id,
-            handle,
-            original: { ...hit }
+          id: hit.id,
+          handle,
+          original: { ...hit }
         };
-
         return;
-    }
+      }
 
-    dragRef.current = {
+      dragRef.current = {
         id: hit.id,
         startX: pt.x,
         startY: pt.y,
         origEl: { ...hit }
-    };
-
-    return;
- } 
+      };
+      return;
+    } 
 
     if (tool === TOOLS.ERASER) {
       const hit = [...elements].reverse().find(el => isHit(el, pt.x, pt.y));
@@ -130,33 +207,31 @@ export default function Canvas({
         setElements(next);
         pushHistory(next);
       }
-      return
+      return;
     }
 
     if (tool === TOOLS.TEXT) {
-     console.log("TEXT TOOL CLICKED");
-     
-     setTextDraft("");
-     setTextInput({
-         x: raw.x,
-         y: raw.y,
-         wx: pt.x,
-         wy: pt.y,
-     });
+      mountingRef.current = true;
+      setTextDraft('');
+      setTextInput({
+        x: raw.x,
+        y: raw.y,
+        wx: pt.x,
+        wy: pt.y,
+      });
+      return;
+    }
 
-     return;
-  }
-
-    setDrawing(true)
-    const base = { id: uid(), color, strokeWidth, fill, opacity: 1 }
+    setDrawing(true);
+    const base = { id: uid(), color, strokeWidth, fill, opacity: 1 };
 
     if (tool === TOOLS.PEN) {
-      setCurrentEl({ ...base, type: 'pen', points: [pt] })
+      setCurrentEl({ ...base, type: 'pen', points: [pt] });
     } else {
-      setCurrentEl({ ...base, type: tool, x1: pt.x, y1: pt.y, x2: pt.x, y2: pt.y })
+      setCurrentEl({ ...base, type: tool, x1: pt.x, y1: pt.y, x2: pt.x, y2: pt.y });
     }
-    canvas.setPointerCapture(e.pointerId)
-  }, [tool, elements, pan, zoom, color, strokeWidth, fill, pushHistory, setSelectedId, setElements])
+    canvas.setPointerCapture(e.pointerId);
+  }, [tool, elements, pan, zoom, color, strokeWidth, fill, pushHistory, setSelectedId, setElements, textInput, textDraft, submitText]);
 
 
   //  Pointer Move 
@@ -221,7 +296,7 @@ export default function Canvas({
             canvas.style.cursor="move";
     }
   } else{
-    canvas.style.cursor="default";
+    canvas.style.cursor = tool === TOOLS.HAND ? 'grab' : (TOOL_CURSORS[tool] || 'default');
   }
 
 
@@ -296,24 +371,23 @@ export default function Canvas({
       collabRef.current.sendCursor(pt.x, pt.y)
     }
 
-    // if (!currentEl) return
-    // // const canvas = canvasRef.current
-    // // const raw = getPoint(e, canvas)
-    // const pt = { 
-    //    x: (raw.x - pan.x) / zoom,
-    //    y: (raw.y - pan.y) / zoom 
-    // };
+    if (!currentEl) return
 
     if (currentEl.type === 'pen') {
       setCurrentEl(el => ({ ...el, points: [...el.points, pt] }))
     } else {
       setCurrentEl(el => ({ ...el, x2: pt.x, y2: pt.y }))
     }
-  }, [currentEl, pan, zoom, setPan, setElements]);
+  }, [currentEl, pan, zoom, setPan, setElements, tool]);
 
 
   // Pointer Up 
-  const onPointerUp = useCallback(() => {
+  const onPointerUp = useCallback((e) => {
+
+    // Reset cursor from grabbing
+    if (panRef.current && e?.currentTarget) {
+      e.currentTarget.style.cursor = tool === TOOLS.HAND ? 'grab' : (TOOL_CURSORS[tool] || 'default');
+    }
 
     if (resizeRef.current) {
     pushHistory(elements);
@@ -342,7 +416,7 @@ export default function Canvas({
 
     collabRef?.current?.broadcast({ type: 'element', el: currentEl }) ;
     setCurrentEl(null);
-  }, [currentEl, elements, pushHistory, setElements,collabRef]);
+  }, [currentEl, elements, pushHistory, setElements,collabRef, tool]);
 
 
   // Wheel zoom 
@@ -360,39 +434,6 @@ export default function Canvas({
     return () => el.removeEventListener('wheel', onWheel)
   }, [onWheel]);
 
-  // Submit text 
-  const submitText = useCallback((text) => {
-     console.log("submitText called");
-    console.log("Typed text:", text);
-    console.log("textInput:", textInput);
-
-    if (!textInput) return
-
-    const value = text.trim();
-
-    if (value) {
-      const el = {
-        id: uid(),
-        type: 'text',
-        color, 
-        strokeWidth, 
-        fill: 'transparent', 
-        opacity: 1,
-        text: value,
-        x1: textInput.wx, 
-        y1: textInput.wy, 
-        fontSize: 18,
-      }
-      const next = [...elements, el];
-      setElements(next);
-      pushHistory(next);
-      collabRef?.current?.broadcast({ type: 'element', el })
-    }
-    setTextDraft('');
-    setTextInput(null);
-  }, [textInput, elements, color, strokeWidth, pushHistory, setElements, collabRef])
-
-  
   function getBounds(el) {
    return {
     left: Math.min(el.x1, el.x2),
@@ -459,61 +500,74 @@ export default function Canvas({
 
 
   return (
-    <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+    <div style={{ 
+      position: 'absolute', 
+      inset: 0, 
+      overflow: 'hidden',
+      zIndex: 1,
+    }}>
       <canvas
         ref={canvasRef}
         style={{
           width: '100%',
           height: '100%',
           display: 'block',
-          cursor: TOOL_CURSORS[tool] || 'crosshair',
+          cursor: tool === TOOLS.HAND ? 'grab' : (TOOL_CURSORS[tool] || 'crosshair'),
         }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerLeave={onPointerUp}
+        onDoubleClick={onDoubleClick}
       />
 
       {/* Text input overlay */}
       {textInput && (
-        <div style={{ position: 'absolute', left: textInput.x, top: textInput.y - 4, zIndex: 50 }}>
-          {textInput && (
-  <div
-    style={{
-      position: "absolute",
-      left: textInput.x,
-      top: textInput.y,
-      zIndex: 9999,
-      background: "black",
-      border: "1px solid black",
-      padding: "4px",
-    }}
-  >
-    <input
-      autoFocus
-      value={textDraft}
-      onChange={(e) => {
-        console.log("Typing:", e.target.value);
-        setTextDraft(e.target.value);
-      }}
-      style={{
-        fontSize: 18,
-        color: "black",
-        background: "white",
-        border: "1px solid black",
-        minWidth: 150,
-      }}
-      onKeyDown={(e) => {
-        console.log("Key:", e.key);
-
-        if (e.key === "Enter") {
-          e.preventDefault();
-          submitText(textDraft);
-        }
-      }}
-    />
-  </div>
-)}
+        <div
+          style={{
+            position: 'absolute',
+            left: textInput.x,
+            top: textInput.y - 2,
+            zIndex: 50,
+          }}
+          onPointerDown={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <input
+            ref={inputRef}
+            type="text"
+            value={textDraft}
+            onChange={(e) => setTextDraft(e.target.value)}
+            placeholder="Type text..."
+            style={{
+              fontSize: Math.max(14, Math.round(20 * zoom)),
+              fontFamily: "'Kalam', 'Assistant', sans-serif",
+              color: color || '#1e1e1e',
+              background: 'rgba(255, 255, 255, 0.95)',
+              border: '1.5px dashed #6965db',
+              borderRadius: 4,
+              outline: 'none',
+              minWidth: 140,
+              padding: '2px 8px',
+              caretColor: '#6965db',
+              boxShadow: '0 2px 10px rgba(105, 101, 219, 0.2)',
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                submitText(e.target.value);
+              }
+              if (e.key === 'Escape') {
+                setTextDraft('');
+                setTextInput(null);
+              }
+            }}
+            onBlur={(e) => {
+              if (mountingRef.current) return;
+              submitText(e.target.value);
+            }}
+          />
         </div>
       )}
     </div>

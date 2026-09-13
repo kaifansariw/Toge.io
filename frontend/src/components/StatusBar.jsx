@@ -1,37 +1,46 @@
 export default function StatusBar({ joined, roomId, peerCount }) {
+  // StatusBar is now integrated into TopBar's floating layout.
+  // This component is kept for collab status display in the bottom-right 
+  // when the collab connection is active.
+  
+  if (!joined) return null;
+
   return (
-
-    <footer style={{
-      height: 28,
-      background: '#16213e',
-      borderTop: '1px solid rgba(255,255,255,0.05)',
-      display: 'flex',
-      alignItems: 'center',
-      padding: '0 16px',
-      gap: 16,
-      flexShrink: 0,
-      userSelect: 'none',
+    <div style={{
+      position: 'absolute',
+      bottom: 12,
+      right: 12,
+      zIndex: 10,
+      pointerEvents: 'all',
     }}>
-
-      <span style={{ color:'#ffffff', fontSize: 11 }}>
-        Alt+drag to pan · Scroll to zoom · Del to delete · Ctrl+Z/Y to undo/redo
-      </span>
-
-      <div style={{ flex: 1 }} />
-
-      {joined && (
-        <span style={{ color: '#50fa7b', fontSize: 11, display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{
-            width: 6, height: 6,
-            background: '#50fa7b',
-            borderRadius: '50%',
-            display: 'inline-block',
-            boxShadow: '0 0 6px #50fa7b',
-          }} />
+      <div className="floating-panel" style={{
+        padding: '6px 14px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        fontSize: 12,
+        fontWeight: 500,
+        color: 'var(--color-success)',
+      }}>
+        <span style={{
+          width: 7,
+          height: 7,
+          background: 'var(--color-success)',
+          borderRadius: '50%',
+          display: 'inline-block',
+          boxShadow: '0 0 6px rgba(47, 158, 68, 0.5)',
+          animation: 'pulse 2s infinite',
+        }} />
+        <span>
           Room: <strong>{roomId}</strong> · {peerCount} user{peerCount !== 1 ? 's' : ''}
         </span>
-      )}
-      
-    </footer>
+      </div>
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+      `}</style>
+    </div>
   )
 }

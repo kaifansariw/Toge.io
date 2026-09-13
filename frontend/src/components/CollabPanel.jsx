@@ -5,11 +5,11 @@ import { COLORS } from '../constants.js'
 export default function CollabPanel({ 
   onClose, 
   myName, 
-  onJoin,      // ← from App.jsx
-  onLeave,     // ← from App.jsx
-  joined,      // ← from App.jsx
-  roomId,      // ← from App.jsx
-  peers,       // ← from App.jsx
+  onJoin,
+  onLeave,
+  joined,
+  roomId,
+  peers,
 })
 
 {
@@ -18,11 +18,11 @@ export default function CollabPanel({
 
   const handleJoin = () => {
     if (!inputRoomId.trim()) return;
-    onJoin(inputRoomId.trim());  // calls joinRoom() in App.jsx which sets collabRef
+    onJoin(inputRoomId.trim());
   }
 
   const handleLeave = () => {
-    onLeave();                 // calls leaveRoom() in App.jsx
+    onLeave();
     setInputRoomId('');
   }
 
@@ -37,8 +37,16 @@ export default function CollabPanel({
     <div className="collab-panel">
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <span style={{ color: '#8be9fd', fontWeight: 600, fontSize: 13 }}>
-         Collaboration
+        <span style={{
+          color: 'var(--color-primary)',
+          fontWeight: 700,
+          fontSize: 14,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+        }}>
+          <Icon d={ICONS.collab} size={18} />
+          Live Collaboration
         </span>
         <button className="tool-btn" onClick={onClose} style={{ padding: 4 }}>
           <Icon d={ICONS.close} size={16} />
@@ -47,13 +55,18 @@ export default function CollabPanel({
 
       {!joined ? (
         <>
-          <p style={{ color: '#666', fontSize: 12, lineHeight: 1.7, marginBottom: 10 }}>
+          <p style={{
+            color: 'var(--color-text-secondary)',
+            fontSize: 13,
+            lineHeight: 1.6,
+            marginBottom: 12,
+          }}>
             Share a room ID with teammates to draw together in real-time.
           </p>
 
           <input
             className="collab-input"
-            placeholder="Room ID  (e.g. my-project)"
+            placeholder="Room ID (e.g. my-project)"
             value={inputRoomId}
             onChange={e => setInputRoomId(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleJoin()}
@@ -64,22 +77,28 @@ export default function CollabPanel({
           </button>
 
           {/* My ID */}
-          <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
+          <div style={{ marginTop: 14, display: 'flex', gap: 8 }}>
             <div style={{
-              background: '#0f3460',
-              borderRadius: 8,
-              padding: '8px 10px',
+              background: 'var(--color-canvas)',
+              borderRadius: 'var(--radius-sm)',
+              padding: '8px 12px',
               flex: 1,
-              fontSize: 11,
-              color: '#666',
-              border: '1px solid rgba(139,233,253,0.1)',
+              fontSize: 12,
+              color: 'var(--color-text-secondary)',
+              border: '1px solid var(--color-border-light)',
             }}>
-              Your ID: <span style={{ color: '#8be9fd' }}>{myName}</span>
+              You: <span style={{ color: 'var(--color-primary)', fontWeight: 600 }}>{myName}</span>
             </div>
             <button
               className="tool-btn"
-              style={{ padding: 8, background: '#0f3460', border: '1px solid rgba(139,233,253,0.1)', borderRadius: 8 }}
+              style={{
+                padding: 8,
+                background: 'var(--color-canvas)',
+                border: '1px solid var(--color-border-light)',
+                borderRadius: 'var(--radius-sm)',
+              }}
               onClick={() => copyToClipboard(myName)}
+              title="Copy ID"
             >
               <Icon d={ICONS.copy} size={14} />
             </button>
@@ -88,25 +107,41 @@ export default function CollabPanel({
       ) : (
         <>
           {/* Connected badge */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            marginBottom: 14,
+            padding: '8px 12px',
+            background: '#f0fdf4',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid #bbf7d0',
+          }}>
             <span style={{
               width: 8, height: 8, borderRadius: '50%',
-              background: '#50fa7b', boxShadow: '0 0 8px #50fa7b',
-              display: 'inline-block'
+              background: 'var(--color-success)',
+              boxShadow: '0 0 6px rgba(47, 158, 68, 0.4)',
+              display: 'inline-block',
             }} />
-            <span style={{ color: '#50fa7b', fontSize: 12 }}>Connected</span>
+            <span style={{ color: 'var(--color-success)', fontSize: 13, fontWeight: 600 }}>Connected</span>
           </div>
 
           {/* Room ID */}
           <div style={{
-            background: '#0f3460', borderRadius: 8,
-            padding: '9px 12px', marginBottom: 14,
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            background: 'var(--color-canvas)',
+            borderRadius: 'var(--radius-sm)',
+            padding: '10px 14px',
+            marginBottom: 14,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            border: '1px solid var(--color-border-light)',
           }}>
-            <span style={{ color: '#8be9fd', fontSize: 13, fontWeight: 500 }}>{roomId}</span>
+            <span style={{ color: 'var(--color-text)', fontSize: 13, fontWeight: 600 }}>{roomId}</span>
             <button
               className="tool-btn" style={{ padding: 4 }}
               onClick={() => copyToClipboard(roomId)}
+              title={copied ? 'Copied!' : 'Copy room ID'}
             >
               <Icon d={copied ? ICONS.close : ICONS.copy} size={14} />
             </button>
@@ -114,8 +149,16 @@ export default function CollabPanel({
 
           {/* Peers list */}
           <div style={{ marginBottom: 14 }}>
-            <div style={{ color: '#555', fontSize: 11, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Icon d={ICONS.users} size={13} />
+            <div style={{
+              color: 'var(--color-text-secondary)',
+              fontSize: 12,
+              fontWeight: 600,
+              marginBottom: 8,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+            }}>
+              <Icon d={ICONS.users} size={14} />
               {(peers?.length ?? 0) + 1} in room
             </div>
 
@@ -124,7 +167,7 @@ export default function CollabPanel({
 
             
             {peers?.map(p => (
-              <PeerRow key={p.id} name={p.name} color={p.color} badge="● live" badgeColor="#50fa7b" />
+              <PeerRow key={p.id} name={p.name} color={p.color} badge="● live" badgeColor="var(--color-success)" />
             ))}
           </div>
 
@@ -137,16 +180,16 @@ export default function CollabPanel({
   )
 }
 
-function PeerRow({ name, color, badge, badgeColor = '#8be9fd' }) {
+function PeerRow({ name, color, badge, badgeColor = 'var(--color-primary)' }) {
   return (
     <div style={{
       display: 'flex', alignItems: 'center',
-      padding: '7px 0',
-      borderBottom: '1px solid rgba(255,255,255,0.05)',
+      padding: '8px 0',
+      borderBottom: '1px solid var(--color-border-light)',
     }}>
       <span className="peer-dot" style={{ background: color }} />
-      <span style={{ color: '#ccc', fontSize: 12 }}>{name}</span>
-      <span style={{ marginLeft: 'auto', color: badgeColor, fontSize: 10 }}>{badge}</span>
+      <span style={{ color: 'var(--color-text)', fontSize: 13, fontWeight: 500 }}>{name}</span>
+      <span style={{ marginLeft: 'auto', color: badgeColor, fontSize: 11, fontWeight: 600 }}>{badge}</span>
     </div>
   )
 }

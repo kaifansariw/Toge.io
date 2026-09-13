@@ -2,111 +2,92 @@ import { COLORS, STROKE_WIDTHS } from '../constants.js'
 
 export default function PropertiesPanel({ color, setColor, strokeWidth, setStrokeWidth, fill, setFill }) {
   return (
-    <aside style={{
-      width: 64,
-      background: '#16213e',
-      borderLeft: '1px solid rgba(255,255,255,0.07)',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      padding: '14px 0',
-      gap: 14,
-      zIndex: 10,
-      flexShrink: 0,
-      overflowY: 'auto',
-    }}>
-      
-      {/* Section label */}
-      <span style={{ fontSize: 9, color: '#ffffff', letterSpacing: 1 }}>COLOR</span>
+    <div className="top-left-area" style={{ top: 60 }}>
+      <div className="floating-panel properties-float">
 
-      {/* Color swatches */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 7, alignItems: 'center' }}>
-        {COLORS.map(c => (
-          <div
-            key={c}
-            className={`swatch ${color === c ? 'active' : ''}`}
-            style={{ background: c }}
-            onClick={() => setColor(c)}
-            title={c}
-          />
-        ))}
-      </div>
-
-      <div className="divider-v" />
-
-      {/* Stroke widths */}
-      <span style={{ fontSize: 9, color:'#ffffff', letterSpacing: 1 }}>SIZE</span>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }}>
-        {STROKE_WIDTHS.map(w => (
-          <div
-            key={w}
-            onClick={() => setStrokeWidth(w)}
-            style={{
-              width: 36,
-              height: 22,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              borderRadius: 6,
-              background: strokeWidth === w ? 'rgba(139,233,253,0.15)' : 'transparent',
-              border: strokeWidth === w ? '1px solid rgba(139,233,253,0.3)' : '1px solid transparent',
-              transition: 'background 0.15s',
-            }}
-            title={`${w}px`}
-          >
-            <div style={{
-              width: 24,
-              height: Math.min(w, 10),
-              background: color,
-              borderRadius: w / 2,
-            }} />
-          </div>
-        ))}
-      </div>
-
-      <div className="divider-v" />
-
-      {/* Fill toggle */}
-      <span style={{ fontSize: 9, color: '#ffffff', letterSpacing: 1 }}>FILL</span>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center' }}>
-        {/* No fill */}
-        <div
-          onClick={() => setFill('transparent')}
-          style={{
-            width: 28,
-            height: 28,
-            borderRadius: 6,
-            cursor: 'pointer',
-            border: fill === 'transparent' ? '2px solid #8be9fd' : '1.5px solid rgba(255,255,255,0.15)',
-            position: 'relative',
-            overflow: 'hidden',
-            transition: 'border-color 0.15s',
-          }}
-          title="No fill"
-        >
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'repeating-linear-gradient(45deg, #2a2a4a 0px, #2a2a4a 4px, #1a1a2e 4px, #1a1a2e 8px)',
-          }} />
+        {/* ── Stroke Color ── */}
+        <div className="section-label">Stroke</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
+          {COLORS.map(c => (
+            <div
+              key={c}
+              className={`swatch ${color === c ? 'active' : ''}`}
+              style={{ background: c }}
+              onClick={() => setColor(c)}
+              title={c}
+            />
+          ))}
         </div>
 
-        {/* Solid fill */}
-        <div
-          onClick={() => setFill(color)}
-          style={{
-            width: 28,
-            height: 28,
-            borderRadius: 6,
-            cursor: 'pointer',
-            background: color,
-            border: fill !== 'transparent' ? '2px solid #8be9fd' : '1.5px solid rgba(255,255,255,0.15)',
-            transition: 'border-color 0.15s',
-          }}
-          title="Solid fill"
-        />
+        <div className="divider-v" />
+
+        {/* ── Stroke Width ── */}
+        <div className="section-label">Stroke width</div>
+        <div style={{ display: 'flex', gap: 4, marginBottom: 12 }}>
+          {STROKE_WIDTHS.map(w => (
+            <button
+              key={w}
+              className={`stroke-btn ${strokeWidth === w ? 'active' : ''}`}
+              onClick={() => setStrokeWidth(w)}
+              title={`${w}px`}
+            >
+              <div style={{
+                width: 20,
+                height: Math.max(Math.min(w, 8), 1),
+                background: strokeWidth === w ? 'var(--color-primary)' : '#868e96',
+                borderRadius: w / 2,
+              }} />
+            </button>
+          ))}
+        </div>
+
+        <div className="divider-v" />
+
+        {/* ── Fill ── */}
+        <div className="section-label">Fill</div>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          {/* No fill */}
+          <div
+            onClick={() => setFill('transparent')}
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: 'var(--radius-sm)',
+              cursor: 'pointer',
+              border: fill === 'transparent'
+                ? '2px solid var(--color-primary)'
+                : '1.5px solid var(--color-border)',
+              position: 'relative',
+              overflow: 'hidden',
+              transition: 'border-color 0.12s ease',
+            }}
+            title="No fill"
+          >
+            {/* Diagonal line for "no fill" indicator */}
+            <svg width="28" height="28" viewBox="0 0 28 28" style={{ position: 'absolute', inset: 0 }}>
+              <line x1="2" y1="26" x2="26" y2="2" stroke="#e03131" strokeWidth="1.5" />
+            </svg>
+          </div>
+
+          {/* Solid fill */}
+          <div
+            onClick={() => setFill(color)}
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: 'var(--radius-sm)',
+              cursor: 'pointer',
+              background: color,
+              border: fill !== 'transparent'
+                ? '2px solid var(--color-primary)'
+                : '1.5px solid var(--color-border)',
+              transition: 'border-color 0.12s ease',
+            }}
+            title="Solid fill"
+          />
+        </div>
+
       </div>
-    </aside>
+    </div>
   )
 }

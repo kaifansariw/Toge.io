@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 80" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7c78e8"/>
+      <stop offset="100%" stop-color="#5551d4"/>
+    </linearGradient>
+    <linearGradient id="stroke-glow" x1="16" y1="56" x2="56" y2="16" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#e0deff" stop-opacity="0.9"/>
+    </linearGradient>
+    <filter id="shadow" x="-8%" y="-8%" width="116%" height="116%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#3a37a0" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Icon mark -->
+  <g transform="translate(8, 8)">
+    <!-- Rounded square -->
+    <rect x="0" y="0" width="64" height="64" rx="14" ry="14" fill="url(#bg)" filter="url(#shadow)"/>
+    <rect x="0" y="0" width="64" height="64" rx="14" ry="14" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+
+    <!-- Drawing stroke -->
+    <path
+      d="M 16 48 C 20 38, 28 24, 34 24 C 40 24, 38 36, 44 32 C 50 28, 48 20, 50 18"
+      stroke="url(#stroke-glow)"
+      stroke-width="4"
+      stroke-linecap="round"
+      fill="none"
+    />
+
+    <!-- Primary pen tip -->
+    <g transform="translate(50, 18) rotate(-55)">
+      <rect x="-1.2" y="-7" width="2.4" height="6" rx="0.5" fill="white" opacity="0.95"/>
+      <polygon points="0,0 -1.2,-1.2 1.2,-1.2" fill="white" opacity="0.95"/>
+    </g>
+
+    <!-- Secondary cursor (collab) -->
+    <g transform="translate(30, 29) rotate(-45)" opacity="0.6">
+      <rect x="-0.8" y="-5" width="1.6" height="4" rx="0.4" fill="white" opacity="0.85"/>
+      <polygon points="0,0 -0.8,-0.8 0.8,-0.8" fill="white" opacity="0.85"/>
+    </g>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="88" y="52" font-family="'Assistant', 'Segoe UI', -apple-system, sans-serif" font-size="36" font-weight="700" fill="#1b1b1f" letter-spacing="-0.5">
+    Toge<tspan fill="#6965db">.io</tspan>
+  </text>
+</svg>
