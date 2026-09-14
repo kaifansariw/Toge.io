@@ -29,7 +29,7 @@
 
   --z-canvas: 1;
   --z-panels: 10;
-  --z-toolbar: 20;
+  --z-toolbar: 30;
   --z-overlay: 50;
   --z-modal: 100;
 }
@@ -303,7 +303,7 @@ body {
 /* ─── Top Center Toolbar ─── */
 .toolbar-float {
   position: absolute;
-  top: 12px;
+  top: 30px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
