@@ -6,7 +6,6 @@ import { CollabSession } from '../utils/collab.js';
 import TopBar from './components/TopBar.jsx';
 import Toolbar from './components/Toolbar.jsx';
 import Canvas from './components/Canvas.jsx';
-import PropertiesPanel from './components/PropertiesPanel.jsx';
 import CollabPanel from './components/CollabPanel.jsx';
 import StatusBar from './components/StatusBar.jsx';
 
@@ -114,6 +113,37 @@ export default function App() {
     setZoom(z => Math.max(z * 0.85, 0.1))
   }, [])
 
+  // ── Save to device (download canvas as PNG) ──
+  const saveToDevice = useCallback(() => {
+    const canvas = document.querySelector('canvas');
+    if (!canvas) return;
+    const link = document.createElement('a');
+    link.download = `toge-canvas-${Date.now()}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }, [])
+
+  // ── Insert image element ──
+  const insertImage = useCallback((dataUrl) => {
+    const img = new Image();
+    img.onload = () => {
+      const maxW = 400;
+      const scale = img.width > maxW ? maxW / img.width : 1;
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const el = {
+        id: `img-${Date.now()}`,
+        type: 'image',
+        x: 100, y: 100, width: w, height: h,
+        src: dataUrl,
+      };
+      const next = [...elements, el];
+      setElements(next);
+      pushHistory(next);
+    };
+    img.src = dataUrl;
+  }, [elements, pushHistory])
+
   return (
     <div className="canvas-container">
 
@@ -139,8 +169,18 @@ export default function App() {
       {/* UI layer (floating panels on top) */}
       <div className="ui-layer">
 
-        {/* Top center toolbar */}
-        <Toolbar tool={tool} onToolChange={setTool} />
+        {/* Top center toolbar (with embedded palette + more options) */}
+        <Toolbar
+          tool={tool}
+          onToolChange={setTool}
+          color={color}
+          setColor={(c) => { setColor(c); setFill(f => f !== 'transparent' ? c : f) }}
+          strokeWidth={strokeWidth}
+          setStrokeWidth={setStrokeWidth}
+          fill={fill}
+          setFill={setFill}
+          onInsertImage={insertImage}
+        />
 
         {/* Floating controls: menu, collab, zoom, undo/redo, help */}
         <TopBar
@@ -159,16 +199,7 @@ export default function App() {
           onClear={clearCanvas}
           onToggleCollab={() => setShowCollab(v => !v)}
           collabActive={collabJoined}
-        />
-
-        {/* Properties panel (floating left) */}
-        <PropertiesPanel
-          color={color}
-          setColor={(c) => { setColor(c); setFill(f => f !== 'transparent' ? c : f) }}
-          strokeWidth={strokeWidth}
-          setStrokeWidth={setStrokeWidth}
-          fill={fill}
-          setFill={setFill}
+          onSaveToDevice={saveToDevice}
         />
 
         {/* Collab panel overlay */}

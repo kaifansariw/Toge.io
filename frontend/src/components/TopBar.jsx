@@ -8,6 +8,7 @@ export default function TopBar({
   onClear,
   onToggleCollab,
   collabActive,
+  onSaveToDevice,
 }) {
   const [showMenu, setShowMenu] = useState(false)
 
@@ -50,6 +51,14 @@ export default function TopBar({
                   zIndex: 99,
                 }}
               >
+                {/* Save to device */}
+                <button onClick={() => { onSaveToDevice?.(); setShowMenu(false) }}>
+                  <Icon d={ICONS.download} size={16} />
+                  Save to device
+                </button>
+
+                <div className="divider-v" style={{ margin: '4px 0' }} />
+
                 <button onClick={() => { onClear(); setShowMenu(false) }} className="danger">
                   <Icon d={ICONS.trash} size={16} />
                   Clear canvas
